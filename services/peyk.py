@@ -19,11 +19,9 @@ def get_db():
 @router.get("/price")
 async def get_price_history(data: Request, db: Session = Depends(get_db)):
     
-    data = await data.json()
-    coin_name = data["coin_name"]
+    coin_name = data.query_params.get("q")
     prices = db.query(Price).filter(Price.coin_name == coin_name).order_by(desc(Price.time)).all()
-    prices_json = jsonable_encoder(prices)
-    return {"prices": prices_json}
+    return jsonable_encoder(prices)
 
 
 @router.post("/subscribe")
