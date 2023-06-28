@@ -7,7 +7,8 @@ Base = declarative_base()
 
 class Price(Base):
     __tablename__ = "prices"
-    coin_name = Column(String(50), primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    coin_name = Column(String(50))
     time = Column(Time)
     price = Column(Float)
 
@@ -18,6 +19,8 @@ class Alert(Base):
     coin_name = Column(String(50), ForeignKey("prices.coin_name"))
     diff = Column(Integer)
 
+# Uncomment the following code to drop all database tables
+# Base.metadata.drop_all(bind=engine)
 # Create the database tables
 Base.metadata.create_all(bind=engine)
 
