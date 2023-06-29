@@ -16,7 +16,7 @@ config.read('config.ini')
 
 
 def get_data(db: Session):
-
+    port = config.get('Coinnews', 'PORT')
     response = requests.get(f"https://localhost:{port}/api/data")
     currency_list = list(response.json)
 
@@ -27,7 +27,7 @@ def get_data(db: Session):
         datetime = datetime.fromisoformat(response.json["updated_at"]) 
 
         price_obj = Price(coin_name=coin, datetime=datetime, price=price )
-        db.add(alert)
+        db.add(price_obj)
         db.commit()
 
 
@@ -47,8 +47,8 @@ def handle_subscription(db: Session):
     # handle alarming process for each available coin
     for coin in currency_list:
         # Get the changes for the current coin from Coinnews API
-        response = requests.get(f"https://localhost:{port}/api/data/{coin_name}/history")
-        price_changes = lis(response.json())
+        response = requests.get(f"https://localhost:{port}/api/data/{coin['name']}/history")
+        price_changes = list(response.json())
        
         # Last price of coin in table
         last_price = db.query(Price).filter(Price.coin_name == coin["name"]).order_by(desc(Price.datetime)).first()
@@ -86,10 +86,10 @@ def handle_email_sending(subscription, percentage_diff):
     
     send_email(subject, email, text)
 
-domin_name = config.get('Mailgun', 'DOMIN_NAME')
-api_key = config.get('Mailgun', 'API_KEY')
 
 def send_email(subject, email, text):
+    domin_name = config.get('Mailgun', 'DOMIN_NAME')
+    api_key = config.get('Mailgun', 'API_KEY')
     print(f"subject={subject} email={email} text={text}")
     response = requests.post(
         "https://api.mailgun.net/v3/"+domin_name+"/messages",
