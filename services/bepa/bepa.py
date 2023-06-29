@@ -17,16 +17,18 @@ config.read('config.ini')
 
 def get_data(db: Session):
     port = config.get('Coinnews', 'PORT')
-    response = requests.get(f"https://localhost:{port}/api/data")
-    currency_list = list(response.json)
+    response = requests.get(f"http://localhost:{port}/api/data")
+    currency_list = list(response.json())
 
     # Send request to get coin price
     for coin in currency_list :
-        response = requests.get(f"https://localhost:{port}/api/data/{coin}")
-        price = response.json["value"]
-        datetime = datetime.fromisoformat(response.json["updated_at"]) 
+        response = requests.get(f"http://localhost:{port}/api/data/{coin}")
+        price = response.json()["value"]
+        time_string = response.json()["updated_at"]
+        time_string_truncated = time_string[:-4] + 'Z'  # Truncate microseconds to six digits
+        time = datetime.strptime(time_string_truncated, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-        price_obj = Price(coin_name=coin, datetime=datetime, price=price )
+        price_obj = Price(coin_name=coin, time=time, price=price )
         db.add(price_obj)
         db.commit()
 
@@ -39,26 +41,28 @@ def handle_subscription(db: Session):
     
     # Get the available currencies from the API
     
-    response = requests.get(f"https://localhost:{port}/api/data")
-    currency_list = list(response.json)
+    response = requests.get(f"http://localhost:{port}/api/data")
+    currency_list = list(response.json())
     
    
     
     # handle alarming process for each available coin
     for coin in currency_list:
         # Get the changes for the current coin from Coinnews API
-        response = requests.get(f"https://localhost:{port}/api/data/{coin['name']}/history")
+        response = requests.get(f"http://localhost:{port}/api/data/{coin}/history")
         price_changes = list(response.json())
        
         # Last price of coin in table
-        last_price = db.query(Price).filter(Price.coin_name == coin["name"]).order_by(desc(Price.datetime)).first()
+        last_price = db.query(Price).filter(Price.coin_name == coin).order_by(desc(Price.time)).first()
 
         if last_price is not None:
-            last_price_date = last_price.datetime
+            last_price_date = last_price.time
             #Get the total amount of changes that have occurred since the last price was recorded
             total_change = 0
             for change in price_changes:
-                change_time = datetime.fromisoformat(change["date"])
+                time_string = change["date"]
+                time_string_truncated = time_string[:-4] + 'Z'  # Truncate microseconds to six digits
+                change_time = datetime.strptime(time_string_truncated, "%Y-%m-%dT%H:%M:%S.%fZ")
                 if (change_time > last_price_date):
                     total_change+= change['value']
 
@@ -66,7 +70,7 @@ def handle_subscription(db: Session):
             percentage_diff = (total_change - last_price.price) / last_price.price
             
             #The list of all subscriptions to be notified according to the percentage of difference obtained
-            coin_subs = db.query(Alert).filter(Alert.coin_name == coin["name"]).all()
+            coin_subs = db.query(Alert).filter(Alert.coin_name == coin).all()
             target_subs = []   
             for subscription in coin_subs:
                 if abs(percentage_diff) >= subscription.diff:
@@ -92,17 +96,19 @@ def send_email(subject, email, text):
     api_key = config.get('Mailgun', 'API_KEY')
     print(f"subject={subject} email={email} text={text}")
     response = requests.post(
-        "https://api.mailgun.net/v3/"+domin_name+"/messages",
+        "http://api.mailgun.net/v3/"+domin_name+"/messages",
         auth=("api", api_key),
         data={"from": "CryptoCurrencyTracker@service.com",
               "to": f"<{email}>",
               "subject": f"<{subject}>",
               "text": f"<{text}>"})
 
-   
 
-db = SessionLocal()
-try :
-    handle_subscription(db)
-finally :   
-    db.close()
+if __name__ == "__main__":
+    db = SessionLocal()
+    try :
+        get_data(db)
+        handle_subscription(db)
+    finally :   
+        db.close()
+    

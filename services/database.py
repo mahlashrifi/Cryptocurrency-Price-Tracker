@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, ForeignKey, Integer, Float, String, Time
+from sqlalchemy import create_engine, Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 engine = create_engine("sqlite:///crypto.db", echo=True)
@@ -9,7 +9,7 @@ class Price(Base):
     __tablename__ = "prices"
     id = Column(Integer, primary_key=True, autoincrement=True)
     coin_name = Column(String(50))
-    time = Column(Time)
+    time = Column(DateTime)
     price = Column(Float)
 
 class Alert(Base):
