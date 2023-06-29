@@ -7,7 +7,7 @@ WORKDIR /app
 # RUN apk add --no-cache --virtual .build-deps gcc musl-dev
 
 # Copy requirements file and install dependencies
-COPY requirements.txt .
+COPY peyk/requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --user -r requirements.txt
 
@@ -20,9 +20,9 @@ WORKDIR /app
 COPY --from=builder /root/.local /usr/local
 
 # Copy source code
-COPY . .
+COPY peyk .
 
-COPY ../shared ./shared
+COPY shared .
 
 # Expose port for the FastAPI application
 EXPOSE 8000

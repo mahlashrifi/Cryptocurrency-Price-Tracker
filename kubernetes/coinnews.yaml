@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: coinnews-configs
+  labels:
+    app: coinnews
+    kubernetes.config: yaml
+    kubernetes.app: data-source
+  annotations:
+    config-type: yaml
+
+data:
+  config.yml:  |+
+    http_port: 8080
+    worker_enable: true
+    worker_interval: 10
+    change_probability: 3
+    change_factor: 7
+    units:
+      - name: bitcoin
+        value: 50000
+      - name: dogecoin
+        value: 23000
+      - name: usdcoin
+        value: 8000
+      - name: zerocoin
+        value: 7500
+      - name: unocoin
+        value: 100
+      - name: colocoin
+        value: 9240
+      - name: somecoin
+        value: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: coinnews-ingress
+  labels:
+    app.kubernetes: coinnews
+  annotations:
+    app.ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: coinnews
+                port:
+                  number: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: coinnews
+  labels:
+    type: data-source
+    app: coinnews
+    kubernetes.app: data-source
+  annotations:
+    imageregistry: "https://hub.docker.com/"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coinnews
+  template:
+    metadata:
+      labels:
+        app: coinnews
+    spec:
+      containers:
+        - name: coinnews
+          image: amirhossein21/coinnews.linux:v0.2
+          ports:
+            - containerPort: 8080
+              name: coinnews
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: config
+              mountPath: /go/src/app/config.yml
+              subPath: config.yml
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /
+            initialDelaySeconds: 3
+            periodSeconds: 3
+      volumes:
+        - name: config
+          configMap:
+            name: coinnews-configs
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: coinnews
+  labels:
+    kubernetes.app: data-source
+    app: coinnews
+
+spec:
+  type: ClusterIP
+  selector:
+    app: coinnews
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

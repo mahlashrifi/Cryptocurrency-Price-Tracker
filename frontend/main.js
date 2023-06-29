@@ -9,7 +9,7 @@ if (searchForm) {
     const input = document.querySelector('#search-form input')
     const query = input.value
     input.value = ''
-    fetch(`http://127.0.0.1:8000/peyk/price?q=${query}`)
+    fetch(`http://127.0.0.1:51192/peyk/price?q=${query}`)
       .then(res => res.json())
       .then(data => {
         console.log(data)
@@ -36,7 +36,7 @@ if (subscriptionForm) {
       diff: inputs[2].value,
     }
     inputs.forEach(input => input.value = '')
-    fetch('http://127.0.0.1:8000/peyk/subscribe', {
+    fetch('http://127.0.0.1:51192/peyk/subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

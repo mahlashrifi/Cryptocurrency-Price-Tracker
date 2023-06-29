@@ -1,7 +1,17 @@
 from sqlalchemy import create_engine, Column, ForeignKey, Integer, Float, String, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
+import os
 
-engine = create_engine("mysql+pymysql://root:12345678@127.0.0.1:3306/crypto_tracker", echo=True)
+DATABASE = {
+    'name': 'crypto_tracker',
+    'user': os.getenv("POSTGRES_USER"),
+    'password': os.getenv("POSTGRES_PASSWORD"),
+    'host': 'db',
+    'port': 5432,
+}
+
+# Create an engine instance
+engine = create_engine('postgresql://{user}:{password}@{host}:{port}/{name}'.format(**DATABASE))
 
 Base = declarative_base()
 

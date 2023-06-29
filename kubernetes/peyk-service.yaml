@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peyk-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: peyk-service
+  template:
+    metadata:
+      labels:
+        app: peyk-service
+    spec:
+      containers:
+      - name: peyk-service
+        image: msalehiv/peyk-service
+        envFrom:
+        - configMapRef:
+            name: myapp-config
+        - secretRef:
+            name: db-secret
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peyk-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: peyk-service

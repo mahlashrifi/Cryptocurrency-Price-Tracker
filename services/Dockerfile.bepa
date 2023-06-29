@@ -3,7 +3,7 @@ FROM python:3.9-alpine AS builder
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY bepa/requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
 COPY . .
@@ -15,9 +15,9 @@ WORKDIR /app
 
 COPY --from=builder /root/.local /usr/local
 
-COPY . .
+COPY bepa .
 
-COPY ../shared ./shared
+COPY shared .
 
 ENV PATH=/root/.local/bin:$PATH
 

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-config
+data:
+  SERVER_PORT: "8000"
+  DATABASE_URL: "postgresql://db:5432/crypto_tracker"

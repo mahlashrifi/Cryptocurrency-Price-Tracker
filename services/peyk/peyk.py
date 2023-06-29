@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
-from database import SessionLocal, Alert, Price
+from database import SessionLocal, Alert, Price, Coin
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import desc
 
@@ -20,7 +20,12 @@ def get_db():
 async def get_price_history(data: Request, db: Session = Depends(get_db)):
     
     coin_name = data.query_params.get("q")
-    prices = db.query(Price).filter(Price.coin_name == coin_name).order_by(desc(Price.time)).all()
+    coin = db.query(Coin).filter(Coin.name == coin_name).first()
+    if coin is None:
+        coin = Coin(name=coin_name)
+        db.add(coin)
+        db.commit()
+    prices = db.query(Price).filter(Price.coin == coin.id).order_by(desc(Price.time)).all()
     return jsonable_encoder(prices)
 
 
@@ -32,7 +37,13 @@ async def subscribe_alert(data: Request, db: Session = Depends(get_db)):
     coin_name = data["coin_name"]
     diff = data["diff"]
 
-    alert = Alert(email=email, coin_name=coin_name, diff=diff)  
+    coin = db.query(Coin).filter(Coin.name == coin_name).first()
+    if coin is None:
+        coin = Coin(name=coin_name)
+        db.add(coin)
+        db.commit()
+
+    alert = Alert(email=email, coin=coin.id, diff=diff)  
   
     db.add(alert)
     db.commit()
