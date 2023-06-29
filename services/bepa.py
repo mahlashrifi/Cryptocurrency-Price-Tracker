@@ -15,6 +15,20 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 
+def get_data(db: Session):
+
+    response = requests.get(f"https://localhost:{port}/api/data")
+    currency_list = list(response.json)
+
+    # Send request to get coin price
+    for coin in currency_list :
+        response = requests.get(f"https://localhost:{port}/api/data/{coin}")
+        price = response.json["value"]
+        datetime = datetime.fromisoformat(response.json["updated_at"]) 
+
+        price_obj = Price(coin_name=coin, datetime=datetime, price=price )
+        db.add(alert)
+        db.commit()
 
 
 
