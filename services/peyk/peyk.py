@@ -26,7 +26,10 @@ async def get_price_history(data: Request, db: Session = Depends(get_db)):
         db.add(coin)
         db.commit()
     prices = db.query(Price).filter(Price.coin == coin.id).order_by(desc(Price.time)).all()
-    return jsonable_encoder(prices)
+    return jsonable_encoder({
+      'coin_name': coin_name,
+      'prices': prices       
+    })
 
 
 @router.post("/subscribe")

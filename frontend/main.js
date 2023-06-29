@@ -9,15 +9,17 @@ if (searchForm) {
     const input = document.querySelector('#search-form input')
     const query = input.value
     input.value = ''
-    fetch(`http://127.0.0.1:51192/peyk/price?q=${query}`)
+    fetch(`http://127.0.0.1:62904/peyk/price?q=${query}`)
       .then(res => res.json())
       .then(data => {
-        console.log(data)
+        const coinName = data.coin_name;
         const ul = document.querySelector('#results')
         ul.innerHTML = ''
-        data.forEach(item => {
+        data.prices.forEach(item => {
           const li = document.createElement('li')
-          li.textContent = item
+          li.textContent = `
+            ${new Date(item.time).toLocaleString()} --- ${coinName} : ${item.price}
+          `
           ul.appendChild(li)
         })
       }).catch(err => {
@@ -36,7 +38,7 @@ if (subscriptionForm) {
       diff: inputs[2].value,
     }
     inputs.forEach(input => input.value = '')
-    fetch('http://127.0.0.1:51192/peyk/subscribe', {
+    fetch('http://127.0.0.1:62904/peyk/subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
