@@ -1,0 +1,24 @@
+# Stage 1: Build Stage
+FROM python:3.9-alpine AS builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Stage 2: Production Stage
+FROM python:3.9-alpine
+
+WORKDIR /app
+
+COPY --from=builder /root/.local /usr/local
+
+COPY . .
+
+COPY ../shared ./shared
+
+ENV PATH=/root/.local/bin:$PATH
+
+CMD [ "python", "bepa.py" ]

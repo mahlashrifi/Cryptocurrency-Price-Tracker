@@ -22,6 +22,8 @@ COPY --from=builder /root/.local /usr/local
 # Copy source code
 COPY . .
 
+COPY ../shared ./shared
+
 # Expose port for the FastAPI application
 EXPOSE 8000
 
