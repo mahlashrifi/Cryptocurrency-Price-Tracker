@@ -6,7 +6,7 @@ DATABASE = {
     'name': 'crypto_tracker',
     'user': os.getenv("POSTGRES_USER"),
     'password': os.getenv("POSTGRES_PASSWORD"),
-    'host': 'db',
+    'host': os.getenv("POSTGRES_HOST"),
     'port': 5432,
 }
 
