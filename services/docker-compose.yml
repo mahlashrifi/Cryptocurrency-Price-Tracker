@@ -27,6 +27,8 @@ services:
       POSTGRES_USER: "db_user"
       POSTGRES_PASSWORD: "12345678"
       POSTGRES_HOST: "db"
+      MAILGUN_API_KEY: "somekey"
+      MAILGUN_DOMAIN_NAME: "somedomain"
 
   peyk:
     build:
