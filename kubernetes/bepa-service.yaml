@@ -15,5 +15,5 @@ spec:
             - configMapRef:
                 name: myapp-config
             - secretRef:
-                name: db-secret
+                name: app-secret
           restartPolicy: OnFailure

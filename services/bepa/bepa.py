@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, Alert, Price, Coin
 from sqlalchemy import desc
 from datetime import datetime
+import os
 
 def get_db():
     db = SessionLocal()
@@ -103,8 +104,8 @@ def handle_email_sending(subscription, percentage_diff):
 
 
 def send_email(subject, email, text):
-    domin_name = config.get('Mailgun', 'DOMIN_NAME')
-    api_key = config.get('Mailgun', 'API_KEY')
+    domin_name = os.getenv('MAILGUN_DOMAIN_NAME')
+    api_key = os.getenv('MAILGUN_API_KEY')
     print(f"subject={subject} email={email} text={text}")
     response = requests.post(
         "http://api.mailgun.net/v3/"+domin_name+"/messages",

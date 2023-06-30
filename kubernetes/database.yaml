@@ -42,7 +42,7 @@ spec:
         image: postgres:13
         envFrom:
         - secretRef:
-            name: db-secret
+            name: app-secret
         volumeMounts:
         - name: db-storage
           mountPath: /var/lib/postgresql/data
