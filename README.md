@@ -4,14 +4,6 @@
 
 ## Introduction
 This project implements a cryptocurrency price monitor application that covers various cloud computing concepts. Users can subscribe to receive email alerts when the price of a cryptocurrency they have subscribed to exceeds a specified percentage change. They can also retrieve a history of price changes for any cryptocurrency. 
-A simple GUI has been developed for this app using `flask`.\
-The full description of the project (in Persian) can be found [here]().
-
-<br>
-
-`/get_currency_history`    | `/subscribe`     
-:-------------------------:|:-------------------------:
-<img src=" " width="400"/> | <img src="" width="400"/>
 
 
 ## Project Architecture
@@ -45,16 +37,4 @@ This service provides two endpoints:
 All components of this application, including services, database, and user interface, are containerized using Docker. A Helm chart is used to simplify and improve the management of the application deployment on Kubernetes. It bundles all the necessary configurations and templates for creating and managing the application's resources within the cluster.\
 *The values put in `values.yaml` are just some representative examples and not all the values are moved here.
 
-## Running the Application
-To initiate the project first make sure you have a running Kubernetes cluster. For example, to start Minikube run:
-```bash
-minikube start
-```
-After that, navigate to `cc-project-helm-chart` and simply run the following command:
-```bash
-helm install crypto-monitor-release .
-```
-Finally, to verify the deployment run:
-```bash
-kubectl get all
-```
+
