@@ -1,4 +1,4 @@
-<h1 align="center">CryptoMonitor</h1>
+<h1 align="center">Cryptocurrency-Price-Tracker</h1>
 <h6 align="center">Spring-2023 Principles of Cloud Computing Course Final Project at Amirkabir University of Tech.</h6>
 
 
