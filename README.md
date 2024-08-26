@@ -34,7 +34,6 @@ This service provides two endpoints:
 </details>
 
 ## Deployment
-All components of this application, including services, database, and user interface, are containerized using Docker. A Helm chart is used to simplify and improve the management of the application deployment on Kubernetes. It bundles all the necessary configurations and templates for creating and managing the application's resources within the cluster.\
-*The values put in `values.yaml` are just some representative examples and not all the values are moved here.
+All components of this application, including services, database, and user interface, are containerized using Docker. 
 
 
